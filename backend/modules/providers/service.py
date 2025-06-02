@@ -87,6 +87,7 @@ def update_business_details(provider_id: str, business_details: BusinessDetails)
             provider_id
         )
     )
+    print("--------->", result)
     return ProviderInDB(**result)
 
 def get_provider(provider_id: str) -> Optional[ProviderInDB]:
