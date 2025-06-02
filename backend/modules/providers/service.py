@@ -65,13 +65,27 @@ def update_business_details(provider_id: str, business_details: BusinessDetails)
         hourly_rate = ?,
         location = ?,
         working_hours = ?,
+        sa_front_id = ?,
+        sa_back_id = ?,
+        profile_photo = ?,
         updated_at = ?
     WHERE id = ?
     RETURNING *
     """
     result = execute_query_one(
         query,
-        (business_details.business_name, business_details.service_type, business_details.hourly_rate, business_details.location, business_details.working_hours, now, provider_id)
+        (
+            business_details.business_name,
+            business_details.service_type,
+            business_details.hourly_rate,
+            business_details.location,
+            business_details.working_hours,
+            business_details.sa_front_id,
+            business_details.sa_back_id,
+            business_details.profile_photo,
+            now,
+            provider_id
+        )
     )
     return ProviderInDB(**result)
 

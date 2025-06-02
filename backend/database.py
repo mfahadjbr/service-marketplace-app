@@ -24,8 +24,15 @@ def execute_query_one(query, params=None):
     with get_db_connection() as conn:
         cur = conn.cursor()
         cur.execute(query, params or ())
-        if query.strip().upper().startswith('SELECT') or query.strip().upper().startswith('INSERT'):
+        # Fetch result before commit for SELECT, INSERT, UPDATE, and DELETE (with RETURNING)
+        if (
+            query.strip().upper().startswith('SELECT') or
+            query.strip().upper().startswith('INSERT') or
+            query.strip().upper().startswith('UPDATE') or
+            query.strip().upper().startswith('DELETE')
+        ):
             row = cur.fetchone()
+            conn.commit()
             return dict(row) if row else None
         conn.commit()
         return None 

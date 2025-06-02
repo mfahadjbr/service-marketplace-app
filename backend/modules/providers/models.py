@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, confloat
-from typing import Optional, Literal
+from typing import Optional, Literal, List
 from datetime import datetime
 
 class ProviderBase(BaseModel):
@@ -23,6 +23,9 @@ class ProviderUpdate(BaseModel):
     hourly_rate: Optional[confloat(gt=0)] = None
     location: Optional[str] = None
     working_hours: Optional[str] = None
+    sa_front_id: Optional[str] = None
+    sa_back_id: Optional[str] = None
+    profile_photo: Optional[str] = None
 
 class BusinessDetails(BaseModel):
     business_name: str
@@ -30,6 +33,9 @@ class BusinessDetails(BaseModel):
     hourly_rate: confloat(gt=0)
     location: str
     working_hours: str
+    sa_front_id: Optional[str] = None  # URL or path to front ID image
+    sa_back_id: Optional[str] = None   # URL or path to back ID image
+    profile_photo: Optional[str] = None  # URL or path to profile photo
 
 class ProviderInDB(ProviderBase):
     id: str
@@ -40,6 +46,9 @@ class ProviderInDB(ProviderBase):
     hourly_rate: Optional[float] = None
     location: Optional[str] = None
     working_hours: Optional[str] = None
+    sa_front_id: Optional[str] = None
+    sa_back_id: Optional[str] = None
+    profile_photo: Optional[str] = None
     rating: float = 0.0
     reviews_count: int = 0
     is_verified: bool = False

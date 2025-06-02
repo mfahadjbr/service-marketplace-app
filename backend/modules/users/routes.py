@@ -77,17 +77,27 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/me", response_model=UserInDB)
-def get_current_user_route(current_user: UserInDB = Depends(get_current_user)):
-    """Get current user's details"""
-    return current_user
+@router.get("/{user_id}", response_model=UserInDB)
+def get_user_details(user_id: str):
+    """Get user details by ID"""
+    user = get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    return user
 
-@router.put("/me", response_model=UserInDB)
-def update_user_me(
-    user_data: UserUpdate,
-    current_user: dict = Depends(get_current_user)
-):
-    updated_user = update_user(current_user["id"], user_data)
+@router.put("/{user_id}", response_model=UserInDB)
+def update_user_details(user_id: str, user_update: UserUpdate):
+    """Update user details by ID"""
+    user = get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    updated_user = update_user(user_id, user_update)
     if not updated_user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -95,10 +105,23 @@ def update_user_me(
         )
     return updated_user
 
-@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user_me(current_user: dict = Depends(get_current_user)):
-    if not delete_user(current_user["id"]):
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user_account(user_id: str):
+    """Delete user account by ID"""
+    user = get_user_by_id(user_id)
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
-        ) 
+        )
+    success = delete_user(user_id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+@router.get("/", response_model=List[UserInDB])
+def get_all_users(skip: int = 0, limit: int = 100):
+    """List all users"""
+    return list_users(skip=skip, limit=limit) 
